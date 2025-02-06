@@ -26,7 +26,7 @@
         <p id="output"></p>
     </div>
     <script>
-        document.getElementById("submitBtn").addEventListener("click", async function() {
+        document.getElementById("submitBtn").addEventListener("click", function() {
             let plasticUsage = document.getElementById("plastic").value;
             let transportUsage = document.getElementById("transport").value;
             let electricityUsage = document.getElementById("electricity").value;
@@ -38,33 +38,18 @@
                 electricity: electricityUsage,
                 food: foodChoice
             };
-            
-            let recommendations = await getEcoAdvice(userData);
+
+            // Временный тестовый ответ
+            let recommendations = generateMockAdvice(userData);
             document.getElementById("output").innerText = recommendations;
         });
 
-        async function getEcoAdvice(data) {
-            let response = await fetch("https://api.openai.com/v1/completions", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    "Authorization": "Bearer "
-                },
-                body: JSON.stringify({
-                    model: "gpt-3.5-turbo",
-                    messages: [{
-                        role: "system",
-                        content: "Ты экологический ассистент, который помогает людям снижать их углеродный след. Анализируй данные пользователя и давай простые рекомендации."
-                    }, {
-                        role: "user",
-                        content: `Мои данные: Пластик: ${data.plastic}, Транспорт: ${data.transport}, Электричество: ${data.electricity}, Питание: ${data.food}. Дай мне советы!`
-                    }],
-                    max_tokens: 100
-                })
-            });
-            
-            let result = await response.json();
-            return result.choices[0].message.content;
+        function generateMockAdvice(data) {
+            return `Ваши рекомендации:
+            - Используйте меньше пластика: ${Math.max(data.plastic - 10, 0)} г/день.
+            - Общественный транспорт: ${Math.min(parseInt(data.transport) + 2, 7)} раз в неделю.
+            - Энергопотребление: ${Math.max(data.electricity - 10, 50)} кВт/ч.
+            - Питание: ${data.food}.`;
         }
     </script>
 </body>
